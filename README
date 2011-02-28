@@ -1,0 +1,69 @@
+sfHttpDigestAuthPlugin
+======================
+
+Installation
+------------
+
+    symfony plugin:install sfHttpDigestAuthPlugin --stability="beta"
+
+Configuration
+-------------
+
+Edit your `config/filters.yaml` to enable the digest authentication.
+
+    # config/filters.yml
+    http_digest:
+      class: sfHttpDigestAuthFilter
+
+You can also customize the plugin parameters:
+
+    # config/filters.yml
+    http_digest:
+      class: sfHttpDigestAuthFilter
+      param:
+        # realm sent to the client
+        realm:                Realm
+
+        # authentication "session" duration
+        nonce_life:           300
+
+        # key used to generate the nonce
+        password_is_hash:     true
+
+        # key used to generate the nonce
+        private_key:          privatekey
+
+The *user provider* is a valid callback taking a `username` in parameter and
+returning his `password` in return, or `null` if the username doe not exist.
+
+The *user signin* takes a `username` in parameter and proceed to the full user
+signin, including the `setAuthenticated()` call.
+
+The builtin sfGuardUser provider supports both Propel and Doctrine implementations.
+Is is bundled with some configuration parameters too:
+
+    # config/app.yml
+    all:
+      sfHttpDigestAuth:
+        callback:
+          # callback used to retrieve the password corresponding to a username
+          retrieve:            [ sfGuardUserProvider, findForUser ]
+
+          # callback used to signin the user when authentication is successful
+          signin:              [ sfGuardUserProvider, signIn ]
+
+        sfGuardUser:
+          # the sfGuardUser method used to retrieve the password HTTP Digest needs
+          password_method:     getPassword
+
+          # does the password_method belongs to the profile class?
+          method_is_profile:   false
+
+The `password_method` must either return a clear password or key, or a hash of
+`username:realm:password` for the Digest to work.
+
+A good practice is to use a randomly generated key dedicated to the HTTP authentication,
+like an API key. This way, you can store the clear key without compromising the
+password.
+In addition, it makes brute force attacks more difficult as they can not rely on
+current dictionaries.
