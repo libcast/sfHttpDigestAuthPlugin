@@ -26,7 +26,10 @@ class sfGuardUserProvider
    */
   public static function findByUsername($username)
   {
-    $user = self::retrievesfGuardUser($username);
+    if (!$user = self::retrievesfGuardUser($username))
+    {
+      throw new Exception(sprintf('User %s not found.', $username));
+    }
 
     $settings = array_merge(array(
       'password_method'   => 'getPassword',
