@@ -58,7 +58,7 @@ class sfHttpDigestAuthFilter extends sfFilter
         }
       }
 
-      if (!$this->context->getUser()->isAuthenticated())
+      if (!$this->context->getUser()->isAuthenticated() && $this->getParameter('send_headers', true))
       {
         $digest->send($this->getContext()->getRequest()->getParameter('scheme'));
         throw new sfStopException();
