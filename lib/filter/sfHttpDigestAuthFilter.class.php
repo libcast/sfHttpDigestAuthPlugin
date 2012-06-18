@@ -60,7 +60,7 @@ class sfHttpDigestAuthFilter extends sfFilter
 
       if (!$this->context->getUser()->isAuthenticated())
       {
-        $digest->send();
+        $digest->send($this->getContext()->getRequest()->getParameter('scheme'));
         throw new sfStopException();
       }
     }

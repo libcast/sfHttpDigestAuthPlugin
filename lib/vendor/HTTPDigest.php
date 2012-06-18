@@ -67,9 +67,14 @@ class HTTPDigest
   var $nonceLife = 300;
 
   /** Send HTTP Auth header */
-  function send()
+  function send($scheme = 'Digest')
   {
-    header('WWW-Authenticate: Digest ' .
+    if (is_null($scheme))
+    {
+      $scheme = 'Digest';
+    }
+
+    header("WWW-Authenticate: $scheme " .
             'realm="' . $this->realm . '", ' .
             'domain="' . $this->baseURL . '", ' .
             'qop=auth, ' .
@@ -105,7 +110,7 @@ class HTTPDigest
    * @return str
    */
   function authenticate($callback)
-  {
+  {    
     if (!is_callable($callback))
     {
       if (is_array($callback))
@@ -144,8 +149,7 @@ class HTTPDigest
       if (
               ($passphrase = call_user_func_array($callback, array($username))) &&
               $opaque[1] == $this->getOpaque() &&
-              $uri[1] == $requestURI &&
-              $nonce[1] == $this->getNonce()
+              $uri[1] == $requestURI
       )
       {
         if ($this->passwordsHashed)
