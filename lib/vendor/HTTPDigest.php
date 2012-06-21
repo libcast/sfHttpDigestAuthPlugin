@@ -102,6 +102,10 @@ class HTTPDigest
         return $headers['Authorization'];
       }
     }
+    if (isset($_POST['Authorization']))
+    {
+      return $_POST['Authorization'];
+    }
     return NULL;
   }
 
